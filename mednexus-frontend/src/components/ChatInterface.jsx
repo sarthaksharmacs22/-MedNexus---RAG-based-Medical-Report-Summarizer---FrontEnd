@@ -82,7 +82,9 @@ const ChatInterface = ({
         });
 
         const summary = response.data;
+        const serverId = response.data.id || tempId; // ✅ FIXED: Define serverId
 
+        // ✅ Update to uploaded status FIRST
         setAttachments((prev) =>
           prev.map((attachment) =>
             attachment.id === tempId
@@ -90,38 +92,23 @@ const ChatInterface = ({
                   ...attachment,
                   status: 'uploaded',
                   progress: 100,
+                  serverId, // ✅ Now serverId exists
                 }
               : attachment
           )
         );
 
-        onFileUploaded?.({
-          ...newAttachment,
-          id: tempId,
-          summary,
-        });
-
-        // 🔥 SHOW SUMMARY IN CHAT
-        onSendMessage?.(`Summary:\n${JSON.stringify(summary)}`);
-
-        setAttachments((prev) =>
-          prev.map((attachment) =>
-            attachment.id === tempId
-              ? {
-                  ...attachment,
-                  status: 'uploaded',
-                  progress: 100,
-                  serverId,
-                }
-              : attachment
-          )
-        );
-
+        // ✅ Notify parent about successful upload
         onFileUploaded?.({
           ...newAttachment,
           id: serverId,
           fileId: serverId,
+          summary,
         });
+
+        // 🔥 Show summary in chat
+        onSendMessage?.(`Summary:\n${JSON.stringify(summary)}`);
+
       } catch (error) {
         console.error('Upload error:', error);
         setAttachments((prev) =>
@@ -131,7 +118,7 @@ const ChatInterface = ({
         );
       }
     },
-    [onFileUploaded]
+    [onFileUploaded, onSendMessage] // ✅ Added missing dependencies
   );
 
   const onDrop = useCallback(
@@ -283,7 +270,7 @@ const ChatInterface = ({
                       <img src={file.preview} alt="" className="w-12 h-12 rounded-xl object-cover" />
                     ) : (
                       <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors.gradient} text-white flex items-center justify-center shrink-0`}
+                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors.gradient} text-white flex items-center justify-center shrink-0`}
                       >
                         {renderFileIcon(file.type)}
                       </div>
@@ -354,7 +341,7 @@ const ChatInterface = ({
             disabled={!input.trim() || isLoading}
             className={`p-3 rounded-xl shrink-0 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/60 ${
               input.trim() && !isLoading
-              ? `bg-gradient-to-br ${colors.gradient} text-white shadow-lg shadow-sky-500/25`
+                ? `bg-gradient-to-br ${colors.gradient} text-white shadow-lg shadow-sky-500/25`
                 : 'bg-slate-200 dark:bg-slate-700 text-slate-500 cursor-not-allowed'
             }`}
             aria-label="Send message"
