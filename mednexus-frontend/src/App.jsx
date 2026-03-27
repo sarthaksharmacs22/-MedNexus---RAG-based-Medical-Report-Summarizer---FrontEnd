@@ -236,27 +236,22 @@ const AppContent = () => {
     setIsProcessing(true);
 
     try {
-      setTimeout(async () => {
-        try {
-          const ocrResponse = await getOCRText(fileData.id);
-          setOcrText(ocrResponse.data?.text || 'Sample extracted text from medical document...');
-          setExplanation(
-            'This document contains medical information that has been processed and simplified for better understanding...'
-          );
-          setRagSources(
-            'Sources:\n1. Medical Journal Article (2023)\n2. Clinical Guidelines (2022)\n3. Research Paper (2021)'
-          );
-        } catch (error) {
-          console.error('Error processing file:', error);
-        } finally {
-          setIsProcessing(false);
-        }
-      }, 2000);
+      const response = await uploadFile(file);
+
+      const summary = response.data;
+
+      setOcrText(summary?.summary || JSON.stringify(summary));
+
+      setExplanation("Report simplified successfully.");
+
+      setRagSources("Generated using AI model.");
+
     } catch (error) {
       console.error('Error uploading file:', error);
+    } finally {
       setIsProcessing(false);
     }
-  };
+  }
 
   const handleVoiceTranscript = () => {
     // Transcript is inserted into input via ChatInterface

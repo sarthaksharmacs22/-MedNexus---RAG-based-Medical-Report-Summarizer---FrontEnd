@@ -81,7 +81,28 @@ const ChatInterface = ({
           );
         });
 
-        const serverId = tempId;
+        const summary = response.data;
+
+        setAttachments((prev) =>
+          prev.map((attachment) =>
+            attachment.id === tempId
+              ? {
+                  ...attachment,
+                  status: 'uploaded',
+                  progress: 100,
+                }
+              : attachment
+          )
+        );
+
+        onFileUploaded?.({
+          ...newAttachment,
+          id: tempId,
+          summary,
+        });
+
+        // 🔥 SHOW SUMMARY IN CHAT
+        onSendMessage?.(`Summary:\n${JSON.stringify(summary)}`);
 
         setAttachments((prev) =>
           prev.map((attachment) =>
