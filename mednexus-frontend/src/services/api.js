@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = "https://edc8-34-63-184-199.ngrok-free.app/";
+const API_BASE_URL = "https://edc8-34-63-184-199.ngrok-free.app";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -48,16 +48,3 @@ export const getRAGAnswer = async (question, fileId = null) => {
 };
 
 export default api;
-
-export const summarizeReport = async (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const response = await api.post('/summarize', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  return response.data;
-};

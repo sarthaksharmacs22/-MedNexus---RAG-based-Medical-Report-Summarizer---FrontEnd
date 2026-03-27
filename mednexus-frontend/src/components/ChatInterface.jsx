@@ -81,7 +81,7 @@ const ChatInterface = ({
           );
         });
 
-        const serverId = response?.data?.file_id || tempId;
+        const serverId = tempId;
 
         setAttachments((prev) =>
           prev.map((attachment) =>
