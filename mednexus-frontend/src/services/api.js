@@ -11,7 +11,7 @@ export const uploadFile = async (file, onUploadProgress) => {
   const formData = new FormData();
   formData.append('file', file);
   
-  return api.post('/upload', formData, {
+  return api.post('/summarize', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
